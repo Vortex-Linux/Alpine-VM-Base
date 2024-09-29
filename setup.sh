@@ -21,7 +21,7 @@ setup-hostname -n alpinelinux &&
 
 setup-interfaces &&
 
-rc-service networking --quiet start & &&
+rc-service networking --quiet start &&
 
 echo "root:alpine" | chpasswd &&
 
