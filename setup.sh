@@ -40,7 +40,11 @@ echo "alpine:alpine" | chpasswd &&
 
 setup-sshd -c openssh &&
 
-setup-ntp -c chrony
+setup-ntp -c chrony && 
+
+sed -i '/^#http:\/\/mirror.jingk.ai\/alpine\/v3.20\/community/s/^#//' /etc/apk/repositories && 
+apk update && 
+apk add sudo xorg-server xpra lvm2 
 EOF
 )
 
