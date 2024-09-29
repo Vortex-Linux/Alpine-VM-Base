@@ -2,7 +2,7 @@
 
 SCRIPT_PATH="$(readlink -f "$0")"
 SCRIPT_DIR="$(dirname "$SCRIPT_PATH")"
-XML_FILE="/tmp/arch-vm-base.xml"
+XML_FILE="/tmp/alpine-vm-base.xml"
 
 LATEST_IMAGE=$(lynx -dump -listonly -nonumbers https://dl-cdn.alpinelinux.org/alpine/latest-stable/releases/x86_64 | grep 'virt' | grep '.iso' | grep -v '\.sha\|\.asc' | sort -V | tail -n 1)
 
@@ -23,6 +23,6 @@ virsh -c qemu:///system define "$XML_FILE"
 
 ship --vm start alpine-vm-base 
 
-./setup.sh
+#./setup.sh
 ./view_vm.sh
 
