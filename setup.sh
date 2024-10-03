@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DISK="/dev/sda"
+DISK="/dev/vda"
 
 COMMANDS=$(cat <<'EOF'
 root
@@ -44,7 +44,7 @@ setup-ntp -c chrony &&
 
 sed -i '/^#http:\/\/mirror.jingk.ai\/alpine\/v3.20\/community/s/^#//' /etc/apk/repositories && 
 apk update && 
-apk add sudo xorg-server xpra lvm2 && 
+apk add sudo xorg-server xpra lvm2 e2fsprogs util-linux && 
 
 fdisk $DISK <<PARTITION
 
@@ -56,7 +56,7 @@ p
 
 w          
 PARTITION
- 
+&&  
 pvcreate ${DISK}1 && 
 vgcreate my_vg ${DISK}1 &&
 
