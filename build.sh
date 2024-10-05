@@ -23,8 +23,8 @@ virsh -c qemu:///system define "$XML_FILE"
 
 ship --vm start alpine-vm-base 
 
-#sleep 10 
+sleep 10 
 
-#./setup.sh
+./setup.sh
 ./view_vm.sh
 
