@@ -43,16 +43,37 @@ setup-ntp -c chrony &&
 
 sed -i '/^#http:\/\/mirror.jingk.ai\/alpine\/v3.20\/community/s/^#//' /etc/apk/repositories && 
 apk update && 
-apk add sudo xorg-server xpra lvm2 && 
+apk add sudo xorg-server xpra lvm2 lvm2-dmeventd thin-provisioning-tools e2fsprogs && 
 
 pvcreate $DISK &&
 vgcreate alpine-vg $DISK && 
-lvcreate -L 2047G --thinpool thin-pool alpine-vg && 
-lvcreate -V 2047G --thin alpine-vg/thin-pool -n root && 
-lvcreate -V 2047G --thin alpine-vg/thin-pool -n home && 
+lvcreate -L 2045G --thinpool thin-pool --chunksize 128K alpine-vg && 
+lvcreate -V 1023G --thin alpine-vg/thin-pool -n root && 
+lvcreate -V 1022G --thin alpine-vg/thin-pool -n home && 
 
 mkfs.ext4 /dev/alpine-vg/root &&
-mkfs.ext4 /dev/alpine-vg/home 
+mkfs.ext4 /dev/alpine-vg/home && 
+
+mount /dev/alpine-vg/root /mnt &&
+mkdir /mnt/home &&
+mount /dev/alpine-vg/home /mnt/home &&
+
+mount -t proc none /mnt/proc &&
+mount -o bind /dev /mnt/dev &&
+mount -o bind /sys /mnt/sys &&
+chroot /mnt /bin/sh << CHROOT
+echo "hi"
+CHROOT &&
+
+apk add grub-bios &&
+grub-install --root-directory=/mnt /dev/vda &&
+chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg &&
+
+umount /mnt/sys &&
+umount /mnt/dev &&
+umount /mnt/proc &&
+umount /mnt/home &&
+umount /mnt
 EOF
 )
 
