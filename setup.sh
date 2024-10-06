@@ -50,15 +50,22 @@ vgcreate alpine-vg $DISK &&
 lvcreate -L 2045G --thinpool thin-pool --chunksize 128K alpine-vg && 
 lvcreate -V 1023G --thin alpine-vg/thin-pool -n root && 
 lvcreate -V 1022G --thin alpine-vg/thin-pool -n home && 
+lvcreate -L 512M -n boot alpine-vg &&
 
 mkfs.ext4 /dev/alpine-vg/root &&
 mkfs.ext4 /dev/alpine-vg/home && 
+mkfs.ext4 /dev/alpine-vg/boot && 
 
 mount -t ext4 /dev/alpine-vg/root /mnt &&
 mkdir /mnt/home &&
 mount -t ext4 /dev/alpine-vg/home /mnt/home &&
+mount /dev/alpine-vg/boot /mnt/boot &&
 
 setup-disk -m sys /mnt &&
+extlinux --install /mnt/boot &&
+
+mkdir -p /mnt/boot/extlinux && 
+
 umount /mnt/home &&
 umount /mnt
 EOF
