@@ -6,7 +6,7 @@ XML_FILE="/tmp/alpine-vm-base.xml"
 
 LATEST_IMAGE=$(lynx -dump -listonly -nonumbers https://dl-cdn.alpinelinux.org/alpine/latest-stable/releases/x86_64 | grep 'virt' | grep '.iso' | grep -v '\.sha\|\.asc' | sort -V | tail -n 1)
 
-ship --vm delete alpine-vm-base 
+echo y | ship --vm delete alpine-vm-base 
 
 echo n | ship --vm create alpine-vm-base --source "$LATEST_IMAGE"
 
