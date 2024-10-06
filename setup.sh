@@ -43,7 +43,7 @@ setup-ntp -c chrony &&
 
 sed -i '/^#http:\/\/mirror.jingk.ai\/alpine\/v3.20\/community/s/^#//' /etc/apk/repositories && 
 apk update && 
-apk add sudo xorg-server xpra lvm2 lvm2-dmeventd thin-provisioning-tools e2fsprogs && 
+apk add sudo xorg-server xpra lvm2 lvm2-dmeventd thin-provisioning-tools e2fsprogs syslinux && 
 
 pvcreate $DISK &&
 vgcreate alpine-vg $DISK && 
@@ -54,24 +54,11 @@ lvcreate -V 1022G --thin alpine-vg/thin-pool -n home &&
 mkfs.ext4 /dev/alpine-vg/root &&
 mkfs.ext4 /dev/alpine-vg/home && 
 
-mount /dev/alpine-vg/root /mnt &&
+mount -t ext4 /dev/alpine-vg/root /mnt &&
 mkdir /mnt/home &&
-mount /dev/alpine-vg/home /mnt/home &&
+mount -t ext4 /dev/alpine-vg/home /mnt/home &&
 
-mount -t proc none /mnt/proc &&
-mount -o bind /dev /mnt/dev &&
-mount -o bind /sys /mnt/sys &&
-chroot /mnt /bin/sh << CHROOT
-echo "hi"
-CHROOT &&
-
-apk add grub-bios &&
-grub-install --root-directory=/mnt /dev/vda &&
-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg &&
-
-umount /mnt/sys &&
-umount /mnt/dev &&
-umount /mnt/proc &&
+setup-disk -m sys /mnt &&
 umount /mnt/home &&
 umount /mnt
 EOF
